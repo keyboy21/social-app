@@ -387,6 +387,11 @@ export const ComposePost = ({
     return true
   }, [thread.posts])
 
+  // Clear the composer (discard current content)
+  const handleClearComposer = React.useCallback(() => {
+    composerDispatch({type: 'clear'})
+  }, [composerDispatch])
+
   const insets = useSafeAreaInsets()
   const viewStyles = useMemo(
     () => ({
@@ -812,6 +817,7 @@ export const ComposePost = ({
             onPublish={onPressPublish}
             onSelectDraft={handleSelectDraft}
             onSaveDraft={saveCurrentDraft}
+            onDiscard={handleClearComposer}
             isEmpty={isComposerEmpty}>
             {missingAltError && <AltTextReminder error={missingAltError} />}
             <ErrorBanner
@@ -996,7 +1002,7 @@ let ComposerPost = React.memo(function ComposerPost({
         a.mb_sm,
         !isActive && isLastPost && a.mb_lg,
         !isActive && styles.inactivePost,
-        isTextOnly && isNative && a.flex_grow,
+        isTextOnly && isLastPost && isNative && a.flex_grow,
       ]}>
       <View style={[a.flex_row, isNative && a.flex_1]}>
         <UserAvatar
@@ -1102,6 +1108,7 @@ function ComposerTopBar({
   onPublish,
   onSelectDraft,
   onSaveDraft,
+  onDiscard,
   isEmpty,
   topBarAnimatedStyle,
   children,
@@ -1116,6 +1123,7 @@ function ComposerTopBar({
   onPublish: () => void
   onSelectDraft: (draft: StoredDraft) => void
   onSaveDraft: () => Promise<void>
+  onDiscard: () => void
   isEmpty: boolean
   topBarAnimatedStyle: StyleProp<ViewStyle>
   children?: React.ReactNode
@@ -1146,6 +1154,7 @@ function ComposerTopBar({
         <DraftsButton
           onSelectDraft={onSelectDraft}
           onSaveDraft={onSaveDraft}
+          onDiscard={onDiscard}
           isEmpty={isEmpty}
         />
         {isPublishing ? (
