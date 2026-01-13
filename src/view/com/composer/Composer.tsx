@@ -329,7 +329,7 @@ export const ComposePost = ({
       // Load media from local storage
       const loadedMedia = await loadDraftMedia(currentDid, draft)
 
-      // Dispatch restore action
+      // Dispatch restore action (this also sets draftId in state)
       composerDispatch({
         type: 'restore_from_draft',
         draft,
@@ -351,6 +351,7 @@ export const ComposePost = ({
       await saveDraft({
         composerState,
         replyTo,
+        existingDraftId: composerState.draftId,
       })
       onClose()
     } catch (e) {
@@ -364,6 +365,7 @@ export const ComposePost = ({
     await saveDraft({
       composerState,
       replyTo,
+      existingDraftId: composerState.draftId,
     })
   }, [saveDraft, composerState, replyTo])
 
